@@ -5,7 +5,7 @@ class ScrapPendingData {
         this.page = page;
     }
 
-    static async run(pendingData) {
+    async run(pendingData) {
         try {
 
         } catch (error) {

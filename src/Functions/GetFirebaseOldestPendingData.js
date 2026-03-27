@@ -5,7 +5,7 @@ class GetFirebaseOldestPendingData {
         this.page = page;
     }
 
-    static async run() {
+    async run() {
         try {
             
         } catch (error) {

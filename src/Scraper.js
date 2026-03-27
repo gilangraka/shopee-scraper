@@ -49,6 +49,9 @@ class WebScraper {
     }
 
     async run() {
+        const ToDashboardInstance = new ToDashboard(this.page);
+        const GetFirebaseOldestPendingDataInstance = new GetFirebaseOldestPendingData(this.page);
+        const ScrapPendingDataInstance = new ScrapPendingData(this.page);
 
         console.log("Starting bot...");
 
@@ -56,17 +59,17 @@ class WebScraper {
         await this.page.goto(this.config.pageUrl, { waitUntil: 'networkidle' });
         await Helper.Delay(3);
 
-        await ToDashboard.run(this.page);
+        await ToDashboardInstance.run();
         while (true) {
             try {
                 let pendingData = null;
                 while (!pendingData) {
                     Helper.PrintMsg("...Checking for pending data...");
-                    pendingData = await GetFirebaseOldestPendingData.run(this.page);
+                    pendingData = await GetFirebaseOldestPendingDataInstance.run();
                     await Helper.Delay(3);
                 }
 
-                await ScrapPendingData.run(this.page, pendingData);
+                await ScrapPendingDataInstance.run(pendingData);
             } catch (err) {
                 console.error("Error when scraping, restarting instance:", err);
                 await Helper.Delay(5);

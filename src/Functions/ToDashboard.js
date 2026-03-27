@@ -5,7 +5,7 @@ class ToDashboard {
         this.page = page;
     }
 
-    static async run() {
+    async run() {
         try {
             try {
                 await Helper.SafeAction(this.page, "input[role='combobox']", "wait", { description: "Search form" });
