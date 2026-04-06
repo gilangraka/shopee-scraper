@@ -27,9 +27,16 @@ class WebScraper {
     }
 
     async init() {
+        const proxyConfig = process.env.PROXY_SERVER ? {
+            server: process.env.PROXY_SERVER,
+            username: process.env.PROXY_USERNAME,
+            password: process.env.PROXY_PASSWORD
+        } : undefined;
+
         this.context = await chromium.launchPersistentContext(this.config.userDataDir, {
             headless: this.config.headless,
-            userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/115 Safari/537.36'
+            userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/115 Safari/537.36',
+            proxy: proxyConfig
         });
 
         const pages = this.context.pages();
