@@ -26,6 +26,31 @@ class WebScraper {
         this.page = null;
     }
 
+    async checkProxyDetails() {
+        try {
+            Helper.PrintMsg("Checking Proxy...");
+
+            const ipInfo = await this.page.evaluate(async () => {
+                const response = await fetch('http://ip-api.com/json/');
+                return await response.json();
+            });
+
+            if (ipInfo && ipInfo.status === 'success') {
+                console.log(`\n🌐 === Proxy Details ===`);
+                console.log(`IP Address : ${ipInfo.query}`);
+                console.log(`Country    : ${ipInfo.country} (${ipInfo.countryCode})`);
+                console.log(`City       : ${ipInfo.city}`);
+                console.log(`ISP        : ${ipInfo.isp}`);
+                console.log(`Timezone   : ${ipInfo.timezone}`);
+                console.log(`================================\n`);
+            } else {
+                console.log("⚠️ Failed to get proxy IP details.");
+            }
+        } catch (error) {
+            console.error("❌ Error while checking proxy:", error.message);
+        }
+    }
+
     async init() {
         const proxyConfig = process.env.PROXY_SERVER ? {
             server: process.env.PROXY_SERVER,
@@ -56,15 +81,17 @@ class WebScraper {
     }
 
     async run() {
-        const ToDashboardInstance = new ToDashboard(this.page);
-        const GetFirebaseOldestPendingDataInstance = new GetFirebaseOldestPendingData(this.page);
-        const ScrapPendingDataInstance = new ScrapPendingData(this.page);
+        const ToDashboardInstance = new ToDashboard(this.page, this.config);
+        const GetFirebaseOldestPendingDataInstance = new GetFirebaseOldestPendingData(this.page, this.config);
+        const ScrapPendingDataInstance = new ScrapPendingData(this.page, this.config);
 
         console.log("Starting bot...");
+        await this.checkProxyDetails();
 
         Helper.PrintMsg("Accessing Login Page...");
         await this.page.goto(this.config.pageUrl, { waitUntil: 'load' });
-        await Helper.Delay(3);
+        Helper.PrintMsg("Login Page");
+        await Helper.Delay(10);
 
         await ToDashboardInstance.run();
         while (true) {

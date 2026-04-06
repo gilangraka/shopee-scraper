@@ -1,8 +1,9 @@
 const Helper = require("../Helpers/Helper");
 
 class ScrapPendingData {
-    constructor(page) {
+    constructor(page, config) {
         this.page = page;
+        this.config = config;
     }
 
     async run(pendingData) {

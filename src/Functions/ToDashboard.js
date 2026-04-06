@@ -1,8 +1,9 @@
 const Helper = require("../Helpers/Helper");
 
 class ToDashboard {
-    constructor(page) {
+    constructor(page, config) {
         this.page = page;
+        this.config = config;
     }
 
     async run() {
@@ -19,7 +20,7 @@ class ToDashboard {
                 Helper.PrintMsg("Checking language selection...");
                 await Helper.SafeAction(
                     this.page,
-                    (p) => p.getByRole('button', { name: 'Bahasa Indonesia' }),
+                    this.page.getByRole('button', { name: 'Bahasa Indonesia' }),
                     'click',
                     { description: "Selecting language" }
                 );
@@ -29,17 +30,17 @@ class ToDashboard {
 
             try {
                 Helper.PrintMsg("Checking Login Form...");
-                await Helper.SafeAction(this.page, "input[type='text'][name='loginKey']", "type", {
+                await Helper.SafeAction(this.page, this.page.getByRole('textbox', { name: 'No. Handphone/Username/Email' }), "type", {
                     value: this.config.loginId,
                     description: "Login ID"
                 });
-                await Helper.SafeAction(this.page, "input[type='password'][name='password']", "type", {
+                await Helper.SafeAction(this.page, this.page.getByRole('textbox', { name: 'Password' }), "type", {
                     value: this.config.loginPassword,
                     description: "Password"
                 });
                 await Promise.all([
                     this.page.waitForNavigation({ waitUntil: 'load' }),
-                    Helper.SafeAction(this.page, "button:has-text('Log In')", "click", {
+                    Helper.SafeAction(this.page, this.page.getByRole('button', { name: 'Log In' }), "click", {
                         description: "Button login"
                     })
                 ]);
@@ -48,7 +49,7 @@ class ToDashboard {
                     Helper.PrintMsg("Checking PIN Input...");
                     await Promise.all([
                         this.page.waitForNavigation({ waitUntil: 'load' }),
-                        await Helper.SafeAction(this.page, "button[aria-label='Verifikasi dengan PIN ShopeePay']", "click", { description: "Button PIN verification" })
+                        await Helper.SafeAction(this.page, this.page.getByRole('button', { name: 'Verifikasi dengan PIN ShopeePay' }), "click", { description: "Button PIN verification" })
                     ]);
                     await Helper.Delay(1);
 
@@ -57,10 +58,25 @@ class ToDashboard {
 
                     await Promise.all([
                         this.page.waitForNavigation({ waitUntil: 'load' }),
-                        await Helper.SafeAction(this.page, "button:has-text('OK')", "click", { description: "Button OK" })
+                        await Helper.SafeAction(this.page, this.page.getByRole('button', { name: 'OK' }), "click", { description: "Button OK" })
                     ]);
                 } catch (error) {
-                    Helper.PrintMsg("PIN input not found, maybe already passed PIN verification. Skipping PIN input...");
+                    Helper.PrintMsg("PIN input not found, Try to link verification...");
+
+                    try {
+                        await Helper.SafeAction(this.page, this.page.getByRole('button', { name: 'Verifikasi melalui link' }), "click", { description: "Link verification" })
+                        await Helper.Delay(2);
+                        await Helper.SafeAction(
+                            this.page, 
+                            "button[role='button'][aria-label='Click the button to send the authentication link through SMS if you cannot receive WhatsAPP messages']",
+                            'click', 
+                            { description: "Button Send via SMS" }
+                        );
+                        Helper.PrintMsg("Please check your SMS for the verification link... waiting for 90 seconds");
+                        await Helper.Delay(90);
+                    } catch (error) {
+                        Helper.PrintMsg("Link verification not found, maybe already verified. Skipping link verification...");
+                    }
                 }
 
                 await Helper.SafeAction(this.page, "input[role='combobox']", "wait", { description: "Search form" });

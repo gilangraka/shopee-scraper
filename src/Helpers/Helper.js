@@ -36,11 +36,15 @@ class Helper {
             try {
                 Helper.PrintMsg(`[${attempt}/${maxRetries}] ${action.toUpperCase()} on: ${description}`);
 
-                // ✅ Always resolve locator first
-                let locator =
-                    typeof selector === 'function'
-                        ? selector(p)
-                        : p.locator(selector);
+                let locator;
+
+                if (typeof selector === 'function') {
+                    locator = selector(p);
+                } else if (typeof selector === 'string') {
+                    locator = p.locator(selector);
+                } else {
+                    locator = selector;
+                }
 
                 // ✅ Handle nth / first
                 if (nth !== null && nth !== undefined) {
