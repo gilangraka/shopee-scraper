@@ -63,7 +63,7 @@ class WebScraper {
         console.log("Starting bot...");
 
         Helper.PrintMsg("Accessing Login Page...");
-        await this.page.goto(this.config.pageUrl, { waitUntil: 'networkidle' });
+        await this.page.goto(this.config.pageUrl, { waitUntil: 'load' });
         await Helper.Delay(3);
 
         await ToDashboardInstance.run();
