@@ -11,6 +11,12 @@ class SetDoneTicketRequest {
 
     async run() {
         try {
+            const res = await axiosInstance.post('/set-done-ticket-request', {
+                ticket_request_id: this.ticketId,
+                storedData: this.storedData,
+            });
+
+            return res.data;
         } catch (error) {
             Helper.PrintErrorMsg(`Failed to set done ticket request: ${error.message}`);
             throw error;
