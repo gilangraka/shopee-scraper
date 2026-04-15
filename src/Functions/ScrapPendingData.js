@@ -173,6 +173,16 @@ class ScrapPendingData {
             await this.page.goto(this.config.pageUrl, {
                 waitUntil: 'load',
             });
+
+            try {
+                Helper.PrintMsg("Storing scraped data to Firebase...");
+                const DoneTicketRequestInstance = new SetDoneTicketRequest(this.page, this.config, pendingData.ticket_id, storedData);
+                await DoneTicketRequestInstance.run();
+                Helper.PrintMsg("Data stored to Firebase successfully.");
+            } catch (error) {
+                Helper.PrintErrorMsg(`Failed to store data to Firebase.`);
+            }
+
             return storedData;
 
         } catch (error) {
