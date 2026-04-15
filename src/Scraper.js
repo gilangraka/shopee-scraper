@@ -63,20 +63,28 @@ class WebScraper {
         console.log("Starting bot...");
 
         Helper.PrintMsg("Accessing Login Page...");
-        await this.page.goto(this.config.pageUrl, { waitUntil: 'networkidle' });
-        await Helper.Delay(3);
+        await this.page.goto(this.config.pageUrl, { 
+            waitUntil: 'load',
+            timeout: 60000
+        });
+            console.log("✅ Halaman berhasil dibuka!");
+            await Helper.Delay(3);
 
-        await ToDashboardInstance.run();
-        while (true) {
+    // await ToDashboardInstance.run();
+            while (true) {
             try {
                 let pendingData = null;
                 while (!pendingData) {
                     Helper.PrintMsg("...Checking for pending data...");
                     pendingData = await GetFirebaseOldestPendingDataInstance.run();
+                    console.log("pendingData result:", pendingData); 
                     await Helper.Delay(3);
                 }
 
-                await ScrapPendingDataInstance.run(pendingData);
+                console.log("✅ pendingData ditemukan:", pendingData); 
+                const result = await ScrapPendingDataInstance.run(pendingData.data);
+                console.log("Hasil scraping:", JSON.stringify(result, null, 2));
+
             } catch (err) {
                 console.error("Error when scraping, restarting instance:", err);
                 await Helper.Delay(5);
