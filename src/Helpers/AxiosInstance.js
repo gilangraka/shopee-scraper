@@ -24,11 +24,35 @@ class AxiosInstance {
         );
     }
 
+    async init() {
+        try {
+            const email = process.env.SCRAPER_EMAIL;
+            const password = process.env.SCRAPER_PASSWORD;
+
+            const response = await this.instance.post('/login/scraper', {
+                email,
+                password,
+            });
+
+            const token = response.data.token;
+
+            if (token) {
+                localStorage.setItem('token', token);
+            }
+        } catch (error) {
+            console.error('Init login failed:', error);
+        }
+    }
+
     getInstance() {
         return this.instance;
     }
 }
 
-const axiosInstance = new AxiosInstance().getInstance();
+const axiosClass = new AxiosInstance();
+
+await axiosClass.init();
+
+const axiosInstance = axiosClass.getInstance();
 
 export default axiosInstance;

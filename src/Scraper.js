@@ -81,7 +81,6 @@ class WebScraper {
     }
 
     async run() {
-        const ToDashboardInstance = new ToDashboard(this.page, this.config);
         const GetFirebaseOldestPendingDataInstance = new GetFirebaseOldestPendingData(this.page, this.config);
         const ScrapPendingDataInstance = new ScrapPendingData(this.page, this.config);
 
@@ -93,18 +92,17 @@ class WebScraper {
         Helper.PrintMsg("Login Page");
         await Helper.Delay(10);
 
-    // await ToDashboardInstance.run();
-            while (true) {
+        while (true) {
             try {
                 let pendingData = null;
                 while (!pendingData) {
                     Helper.PrintMsg("...Checking for pending data...");
                     pendingData = await GetFirebaseOldestPendingDataInstance.run();
-                    console.log("pendingData result:", pendingData); 
+                    console.log("pendingData result:", pendingData);
                     await Helper.Delay(3);
                 }
 
-                console.log("✅ pendingData ditemukan:", pendingData); 
+                console.log("✅ pendingData ditemukan:", pendingData);
                 const result = await ScrapPendingDataInstance.run(pendingData.data);
                 console.log("Hasil scraping:", JSON.stringify(result, null, 2));
 
