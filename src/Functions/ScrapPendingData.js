@@ -52,7 +52,6 @@ class ScrapPendingData {
                 // 1. Navigasi ke halaman search Tokopedia
                 await this.page.goto(`https://www.tokopedia.com/search?st=product&q=${encodeURIComponent(data)}`, {
                     waitUntil: 'load',
-                    timeout: 60000
                 });
 
                 // 2. Tunggu container produk muncul
@@ -171,6 +170,9 @@ class ScrapPendingData {
                 });
             }
 
+            await this.page.goto(this.config.pageUrl, {
+                waitUntil: 'load',
+            });
             return storedData;
 
         } catch (error) {
