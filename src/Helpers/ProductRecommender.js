@@ -1,6 +1,6 @@
 class ProductRecommender {
   static weights = {
-    count_buy: 4,
+    total_buy: 4,
     rating: 4,
     price: 2
   };
@@ -23,17 +23,17 @@ class ProductRecommender {
   }
 
   static calculateScores(products) {
-    const buyMM = this.getMinMax(products, "count_buy");
+    const buyMM = this.getMinMax(products, "total_buy");
     const ratingMM = this.getMinMax(products, "rating");
     const priceMM = this.getMinMax(products, "price");
 
     return products.map((p, index) => {
-      const normBuy = this.normalize(p.count_buy, buyMM.min, buyMM.max);
+      const normBuy = this.normalize(p.total_buy, buyMM.min, buyMM.max);
       const normRating = this.normalize(p.rating, ratingMM.min, ratingMM.max);
       const normPrice = this.normalize(p.price, priceMM.min, priceMM.max, true);
 
       const score =
-        normBuy * this.weights.count_buy +
+        normBuy * this.weights.total_buy +
         normRating * this.weights.rating +
         normPrice * this.weights.price;
 
@@ -54,3 +54,5 @@ class ProductRecommender {
     return this.rank(products)[0];
   }
 }
+
+module.exports = ProductRecommender;
