@@ -1,4 +1,5 @@
-const { default: axiosInstance } = require("../Helpers/AxiosInstance");
+const axiosClass = require("../Helpers/AxiosInstance");
+const axiosInstance = axiosClass.getInstance();
 const Helper = require("../Helpers/Helper");
 
 class SetDoneTicketRequest {
@@ -11,7 +12,7 @@ class SetDoneTicketRequest {
 
     async run() {
         try {
-            const res = await axiosInstance.post('/set-done-ticket-request', {
+            const res = await axiosInstance.post('/scraper/set-done-ticket-request', {
                 ticket_request_id: this.ticketId,
                 storedData: this.storedData,
             });

@@ -1,4 +1,5 @@
-const { default: axiosInstance } = require("../Helpers/AxiosInstance");
+const axiosClass = require("../Helpers/AxiosInstance");
+const axiosInstance = axiosClass.getInstance();
 const Helper = require("../Helpers/Helper");
 
 class GetFirebaseOldestPendingData {
@@ -9,8 +10,8 @@ class GetFirebaseOldestPendingData {
 
     async run() {
         try {
-            const res = await axiosInstance.get('/get-oldest-ticket-request');
-            const data = res.data.data;
+            const res = await axiosInstance.get('/scraper/get-oldest-ticket-request');
+            const data = res.data.data.products;
 
             return data;
         } catch (error) {
