@@ -1,4 +1,6 @@
-import axios from 'axios';
+const axios = require('axios');
+
+let token = null;
 
 class AxiosInstance {
     constructor() {
@@ -12,12 +14,9 @@ class AxiosInstance {
     _initializeInterceptor() {
         this.instance.interceptors.request.use(
             (config) => {
-                const token = localStorage.getItem('token');
-
                 if (token) {
                     config.headers.Authorization = `Bearer ${token}`;
                 }
-
                 return config;
             },
             (error) => Promise.reject(error)
@@ -29,18 +28,23 @@ class AxiosInstance {
             const email = process.env.SCRAPER_EMAIL;
             const password = process.env.SCRAPER_PASSWORD;
 
-            const response = await this.instance.post('/login/scraper', {
+            console.log('Logging in scraper...');
+
+            const response = await this.instance.post('/auth/login/scraper', {
                 email,
                 password,
             });
 
-            const token = response.data.token;
+            token = response.data.data?.token || response.data.token;
 
-            if (token) {
-                localStorage.setItem('token', token);
+            if (!token) {
+                throw new Error('Token tidak ditemukan di response');
             }
+
+            console.log('Login scraper berhasil!');
         } catch (error) {
-            console.error('Init login failed:', error);
+            console.error('Init login failed:', error.message);
+            throw error;
         }
     }
 
@@ -51,8 +55,4 @@ class AxiosInstance {
 
 const axiosClass = new AxiosInstance();
 
-await axiosClass.init();
-
-const axiosInstance = axiosClass.getInstance();
-
-export default axiosInstance;
+module.exports = axiosClass;
